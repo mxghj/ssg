@@ -71,6 +71,13 @@ lexicalAnalysis :: proc(input: string) -> [dynamic]token {
 			}
 			text := string(input[start_i:end_i - star_amount_start + 1])
 			append(&tokens, token{text, star_type})
+		case:
+		    start_i = end_i
+			for (end_i + 1 < len(input) && !isDelimiter(input[end_i])) {
+			    end_i+=1
+			}
+			text := string(input[start_i:end_i - start_i + 1])
+			append(&tokens, token{text, tokenKind.Paragraph})
 		}
 	}
 	return tokens
