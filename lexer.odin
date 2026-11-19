@@ -1,5 +1,8 @@
 package main
 
+import "core:fmt"
+import "core:strings"
+
 tokenKind :: enum u8 {
 	Heading1,
 	Heading2,
@@ -38,17 +41,20 @@ lexicalAnalysis :: proc(input: string) -> [dynamic]token {
 			heading_type := (tokenKind)(heading_level - 1)
 			start_i = end_i
 			for (end_i + 1 < len(input) && !isDelimiter(input[end_i])) {
+				if input[end_i] == '\n' {
+					break
+				}
 				end_i += 1
 			}
-			text := string(input[start_i:end_i + 1])
+			text := strings.trim_space(string(input[start_i:end_i + 1]))
 			append(&tokens, token{text, heading_type})
-		case '<':
+		case '>':
 			end_i += 1
 			start_i = end_i
 			for (end_i + 1 < len(input) && !isDelimiter(input[end_i])) {
 				end_i += 1
 			}
-			text := string(input[start_i:end_i + 1])
+			text := strings.trim_space(string(input[start_i:end_i + 1]))
 			append(&tokens, token{text, tokenKind.Blockquotes})
 		case '*':
 			star_amount_start: int
@@ -69,15 +75,20 @@ lexicalAnalysis :: proc(input: string) -> [dynamic]token {
 					if star_amount_start == star_amount_end do break
 				}
 			}
-			text := string(input[start_i:end_i - star_amount_start + 1])
+			text := strings.trim_space(string(input[start_i:end_i - star_amount_start + 1]))
 			append(&tokens, token{text, star_type})
 		case:
-		    start_i = end_i
-			for (end_i + 1 < len(input) && !isDelimiter(input[end_i])) {
-			    end_i+=1
+			if end_i + 1 < len(input) {
+				start_i = end_i
+				for (end_i + 1 < len(input) && !isDelimiter(input[end_i])) {
+					end_i += 1
+				}
+				text: string
+				if isDelimiter(input[end_i]) {
+					text = strings.trim_space(string(input[start_i:end_i]))
+				} else do text = strings.trim_space(string(input[start_i:end_i + 1]))
+				append(&tokens, token{text, tokenKind.Paragraph})
 			}
-			text := string(input[start_i:end_i - start_i + 1])
-			append(&tokens, token{text, tokenKind.Paragraph})
 		}
 	}
 	return tokens
