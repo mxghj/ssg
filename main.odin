@@ -1,14 +1,20 @@
 package main
 
+import "core:os"
 import "core:fmt"
 
-print_tokens :: proc(tokens: [dynamic]token) {
-	for token in tokens {
-		fmt.println("Kind: ", token.kind, " - text: ", token.text)
-	}
-}
-
 main :: proc() {
-	fmt.println("Lexical analysis of \"# Hello\"")
-	print_tokens(lexicalAnalysis("# Hello"))
+    if len(os.args) == 2 {
+        data, err_1 := os.read_entire_file(os.args[1], context.allocator)
+		if err_1 != nil {
+			panic("Can't open the file")
+		}
+		defer delete(data, context.allocator)
+		text := string(data)
+		code := convertTokensToHTMLCSS(lexicalAnalysis(text))
+		err_2 := os.write_entire_file("index.html", transmute([]byte)(code))
+        if err_2 != nil {
+            panic("Can't write the file \"index.html\"")
+        }
+    } else do fmt.println("Usage:\n     ssg <md file path>")
 }

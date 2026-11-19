@@ -1,6 +1,5 @@
 package main
 
-import "core:fmt"
 import "core:strings"
 
 tokenKind :: enum u8 {
@@ -75,7 +74,7 @@ lexicalAnalysis :: proc(input: string) -> [dynamic]token {
 					if star_amount_start == star_amount_end do break
 				}
 			}
-			text := strings.trim_space(string(input[start_i:end_i - star_amount_start + 1]))
+			text := strings.trim_space(string(input[start_i:end_i - star_amount_start]))
 			append(&tokens, token{text, star_type})
 		case:
 			if end_i + 1 < len(input) {

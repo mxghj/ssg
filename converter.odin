@@ -1,11 +1,9 @@
 package main
 
-import "core:fmt"
-import "core:os"
 import "core:strings"
 
-convertTokensToHTML :: proc(tokens: [dynamic]token) -> string {
-	html := "<!DOCTYPE html>\n<html>\n<body>\n"
+convertTokensToHTMLCSS :: proc(tokens: [dynamic]token) -> string {
+    html := "<!DOCTYPE html>\n<html>\n<head><title>Hello</title>\n<link href='https://fonts.googleapis.com/css?family=IBM Plex Mono' rel='stylesheet'/>\n</head>\n<style>\n.content {\nfont-size: 1.09375rem;\nwidth: 100%;\ncolor: #C5C8C6;\ntext-align: center;\nfont-family: IBM Plex Mono;\n}\nbody\n{\n\nbackground-color: #080808;\n}\n</style>\n<body>\n<div class=\"content\">\n<p>"
 	for token in tokens {
 		start: string
 		end: string
@@ -28,9 +26,6 @@ convertTokensToHTML :: proc(tokens: [dynamic]token) -> string {
 		case tokenKind.Heading6:
 			start = "<h6> "
 			end = "</h6> "
-		case tokenKind.Paragraph:
-			start = "<p> "
-			end = "</p> "
 		case tokenKind.Bold:
 			start = "<strong> "
 			end = "</strong> "
@@ -51,6 +46,6 @@ convertTokensToHTML :: proc(tokens: [dynamic]token) -> string {
 		tk, _ = strings.replace_all(tk, "\n", "<br>")
 		html = strings.concatenate({html, tk})
 	}
-	html = strings.concatenate({html, "\n</body>\n</html>"})
+	html = strings.concatenate({html, "\n</p>\n</div>\n</body>\n</html>"})
 	return html
 }
